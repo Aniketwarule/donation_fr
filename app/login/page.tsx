@@ -43,7 +43,7 @@ export default function CreateCampaignPage() {
       setIsSubmitting(false);
   
       if (data.success) {
-        router.push("/wallet"); // Redirect after successful OTP verification
+        router.push("/"); // Redirect after successful OTP verification
       } else {
         alert("Invalid OTP. Try again.");
       }

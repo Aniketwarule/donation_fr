@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { motion } from "framer-motion";
 
 // Mock data
 const pendingCampaigns = [
@@ -48,104 +49,132 @@ export default function AdminDashboardPage() {
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
-      
-      <div className="container pt-24">
+
+      <div className=" pt-24  w-full">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-bold">Admin Dashboard</h1>
-            <p className="mt-2 text-muted-foreground">
+          <div className="w-full text-center">
+            <motion.h1
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="text-4xl font-bold"
+            >
+              Admin Dashboard
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.3 }}
+              className="mt-2 text-muted-foreground"
+            >
               Manage campaigns and withdrawal requests
-            </p>
+            </motion.p>
           </div>
-          <Badge variant="outline" className="text-sm">
-            Admin
-          </Badge>
         </div>
+        <div className="flex justify-center w-full mb-20">
+          <Tabs defaultValue="campaigns" className="mt-8  w-7/12">
+            <TabsList className="ml-2 mb-4">
+              <TabsTrigger value="campaigns" className="">
+                Pending Campaigns
+              </TabsTrigger>
+              <TabsTrigger value="withdrawals">Withdrawal Requests</TabsTrigger>
+            </TabsList>
 
-        <Tabs defaultValue="campaigns" className="mt-8">
-          <TabsList>
-            <TabsTrigger value="campaigns">Pending Campaigns</TabsTrigger>
-            <TabsTrigger value="withdrawals">Withdrawal Requests</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="campaigns" className="mt-4">
-            <div className="space-y-4">
-              {pendingCampaigns.map((campaign) => (
-                <Card key={campaign.id} className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="text-xl font-semibold">{campaign.title}</h3>
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        by {campaign.organizer}
-                      </p>
-                      <div className="mt-4 space-y-2">
-                        <p className="text-sm">
-                          <span className="font-medium">Goal:</span> ₹
-                          {campaign.goal.toLocaleString()}
+            <TabsContent value="campaigns" className="mt-4">
+              <div className="space-y-4">
+                {pendingCampaigns.map((campaign) => (
+                  <Card key={campaign.id} className="p-6">
+                    <motion.div
+                      initial={{ opacity: 0, y: 50 }} // start hidden and slightly down
+                      whileInView={{ opacity: 1, y: 0 }} // animate to full visibility
+                      viewport={{ once: true, amount: 0.3 }} // trigger when 30% of the card is visible
+                      transition={{ duration: 0.6, ease: "easeInOut" }}
+                      className="flex items-start justify-between"
+                    >
+                      <div>
+                        <h3 className="text-xl font-semibold">
+                          {campaign.title}
+                        </h3>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          by {campaign.organizer}
                         </p>
-                        <p className="text-sm">
-                          <span className="font-medium">Submitted:</span>{" "}
-                          {campaign.submittedAt}
-                        </p>
+                        <div className="mt-4 space-y-2">
+                          <p className="text-sm">
+                            <span className="font-medium">Goal:</span> ₹
+                            {campaign.goal.toLocaleString()}
+                          </p>
+                          <p className="text-sm">
+                            <span className="font-medium">Submitted:</span>{" "}
+                            {campaign.submittedAt}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" className="gap-2">
-                        <XCircle className="h-4 w-4 text-destructive" />
-                        Reject
-                      </Button>
-                      <Button className="gap-2">
-                        <CheckCircle2 className="h-4 w-4" />
-                        Approve
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="withdrawals" className="mt-4">
-            <div className="space-y-4">
-              {withdrawalRequests.map((request) => (
-                <Card key={request.id} className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="text-xl font-semibold">{request.campaign}</h3>
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        Milestone: {request.milestone}
-                      </p>
-                      <div className="mt-4 space-y-2">
-                        <p className="text-sm">
-                          <span className="font-medium">Amount:</span> ₹
-                          {request.amount.toLocaleString()}
-                        </p>
-                        <p className="text-sm">
-                          <span className="font-medium">Requested by:</span>{" "}
-                          {request.requestedBy}
-                        </p>
-                        <p className="text-sm">
-                          <span className="font-medium">Date:</span>{" "}
-                          {request.date}
-                        </p>
+                      <div className="flex gap-2">
+                        <Button variant="outline" className="gap-2">
+                          <XCircle className="h-4 w-4 text-destructive" />
+                          Reject
+                        </Button>
+                        <Button className="gap-2">
+                          <CheckCircle2 className="h-4 w-4" />
+                          Approve
+                        </Button>
                       </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" className="gap-2">
-                        <XCircle className="h-4 w-4 text-destructive" />
-                        Reject
-                      </Button>
-                      <Button className="gap-2">
-                        <CheckCircle2 className="h-4 w-4" />
-                        Approve
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
+                    </motion.div>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="withdrawals" className="mt-4">
+              <div className="space-y-4">
+                {withdrawalRequests.map((request) => (
+                  <Card key={request.id} className="p-6">
+                    <motion.div
+                      initial={{ opacity: 0, y: 50 }} // start hidden and slightly down
+                      whileInView={{ opacity: 1, y: 0 }} // animate to full visibility
+                      viewport={{ once: true, amount: 0.3 }} // trigger when 30% of the card is visible
+                      transition={{ duration: 0.6, ease: "easeInOut" }}
+                      className="flex items-start justify-between"
+                    >
+                      <div>
+                        <h3 className="text-xl font-semibold">
+                          {request.campaign}
+                        </h3>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          Milestone: {request.milestone}
+                        </p>
+                        <div className="mt-4 space-y-2">
+                          <p className="text-sm">
+                            <span className="font-medium">Amount:</span> ₹
+                            {request.amount.toLocaleString()}
+                          </p>
+                          <p className="text-sm">
+                            <span className="font-medium">Requested by:</span>{" "}
+                            {request.requestedBy}
+                          </p>
+                          <p className="text-sm">
+                            <span className="font-medium">Date:</span>{" "}
+                            {request.date}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="outline" className="gap-2">
+                          <XCircle className="h-4 w-4 text-destructive" />
+                          Reject
+                        </Button>
+                        <Button className="gap-2">
+                          <CheckCircle2 className="h-4 w-4" />
+                          Approve
+                        </Button>
+                      </div>
+                    </motion.div>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     </main>
   );
