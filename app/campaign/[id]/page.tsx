@@ -54,20 +54,22 @@ export default function CampaignPage({ params }: { params: { id: string } }) {
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
-      
-      <div className="container pt-24">
+
+      <div className="w-full pt-24">
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Main Content */}
-          <div className="lg:col-span-2">
-            <div className="relative aspect-video overflow-hidden rounded-lg">
-              <Image
-                src={campaignData.image}
-                alt={campaignData.title}
-                fill
-                className="object-cover"
-              />
+          <div className="lg:col-span-2 pl-12 mb-20">
+            <div className="p-4 pl-0 rounded-lg shadow-md">
+              <div className="relative aspect-video overflow-hidden rounded-lg">
+                <Image
+                  src={campaignData.image}
+                  alt={campaignData.title}
+                  fill
+                  className="object-cover"
+                />
+              </div>
             </div>
-            
+
             <h1 className="mt-6 text-3xl font-bold">{campaignData.title}</h1>
             <div className="mt-4 flex items-center space-x-4 text-sm text-muted-foreground">
               <span className="flex items-center">
@@ -79,23 +81,28 @@ export default function CampaignPage({ params }: { params: { id: string } }) {
                 {campaignData.donors} donors
               </span>
             </div>
-            
+
             <Tabs defaultValue="about" className="mt-8">
               <TabsList>
                 <TabsTrigger value="about">About</TabsTrigger>
                 <TabsTrigger value="transactions">Transactions</TabsTrigger>
                 <TabsTrigger value="milestones">Milestones</TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="about" className="mt-4">
-                <p className="text-muted-foreground">{campaignData.description}</p>
+                <p className="text-muted-foreground">
+                  {campaignData.description}
+                </p>
               </TabsContent>
-              
+
               <TabsContent value="transactions">
                 <div className="space-y-4">
                   {campaignData.transactions.map((tx) => (
-                    <Card key={tx.id} className="p-4">
-                      <div className="flex items-center justify-between">
+                    <Card
+                      key={tx.id}
+                      className="p-4 border-2 border-transparent hover:border-gray-300"
+                    >
+                      <div className="flex items-center justify-between ">
                         <div>
                           <p className="font-medium">{tx.donor}</p>
                           <p className="text-sm text-muted-foreground">
@@ -116,12 +123,15 @@ export default function CampaignPage({ params }: { params: { id: string } }) {
                   ))}
                 </div>
               </TabsContent>
-              
+
               <TabsContent value="milestones">
                 <div className="space-y-4">
                   {campaignData.milestones.map((milestone, index) => (
-                    <Card key={index} className="p-4">
-                      <div className="flex items-center justify-between">
+                    <Card
+                      key={index}
+                      className="p-4 border-2 border-transparent hover:border-gray-300"
+                    >
+                      <div className="flex items-center justify-between ">
                         <div>
                           <p className="font-medium">{milestone.title}</p>
                           <p className="text-sm text-muted-foreground">
@@ -153,9 +163,9 @@ export default function CampaignPage({ params }: { params: { id: string } }) {
                     of ₹{campaignData.goal.toLocaleString()} goal
                   </p>
                 </div>
-                
+
                 <Progress value={progress} />
-                
+
                 <div className="space-y-4">
                   <Input
                     type="number"
@@ -163,7 +173,7 @@ export default function CampaignPage({ params }: { params: { id: string } }) {
                     value={donationAmount}
                     onChange={(e) => setDonationAmount(e.target.value)}
                   />
-                  <Button className="w-full" size="lg">
+                  <Button className="w-full bg-green-300" size="lg">
                     Donate Now
                   </Button>
                 </div>
