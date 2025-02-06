@@ -2,21 +2,21 @@
 
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
-import { Wallet2 } from "lucide-react";
+import { Wallet2, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation"; // Import useRouter
+import { usePathname, useRouter } from "next/navigation";
 
 export function Navbar() {
   const pathname = usePathname();
-  const router = useRouter(); // Initialize the useRouter hook
+  const router = useRouter();
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login state
-  const [isConnected, setIsConnected] = useState(false); // Track wallet connection
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+  const [walletAddress, setWalletAddress] = useState("");
 
-  // Check if the user is already logged in when the component mounts
+  // Check login status on mount
   useEffect(() => {
-    // If the user is logged in, retrieve the login state from localStorage
     const loginStatus = localStorage.getItem("isLoggedIn");
     if (loginStatus === "true") {
       setIsLoggedIn(true);
@@ -24,15 +24,20 @@ export function Navbar() {
   }, []);
 
   const handleLogin = () => {
-    // Simulate login by setting isLoggedIn to true
-    setIsLoggedIn(true);
-    localStorage.setItem("isLoggedIn", "true"); // Save login state in localStorage
-    router.push("/login"); // Navigate to login page
+    if (pathname !== "/login") {
+      router.push("/login");
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    setIsLoggedIn(false);
+    router.push("/login");
   };
 
   const handleConnect = () => {
-    // TODO: Implement wallet connection logic here
-    setIsConnected(true); // Simulate wallet connection
+    setIsConnected(true);
+    setWalletAddress("0xAbCd...EfGh"); // Replace with real wallet logic
   };
 
   return (
@@ -62,28 +67,42 @@ export function Navbar() {
           >
             Create Campaign
           </Link>
-          {isConnected && (
+          {isConnected ? (
             <Link href="/wallet" className="text-sm font-medium">
               Wallet
             </Link>
-          )}
+          ) : null}
 
-          {/* Conditional rendering of Log In or Connect Wallet button */}
+          {/* Conditional rendering of Log In / Connect Wallet / Logout */}
           {!isLoggedIn ? (
             <Button
-              onClick={handleLogin} // Call handleLogin when clicked
-              className="hover:bg-white hover:text-black transition duration-500 ease-in-out border-2 border-transparent border-black dark:hover:bg-black dark:hover:text-white dark:hover:border-white"
+              onClick={handleLogin}
+              className="group border-2 border-black dark:border-white transition duration-500 ease-in-out hover:bg-white dark:hover:bg-black hover:text-black dark:hover:text-white"
             >
               Log In
             </Button>
           ) : (
-            <Button
-              variant={isConnected ? "outline" : "default"}
-              onClick={handleConnect}
-              className="hover:bg-white hover:text-black transition duration-500 ease-in-out border-2 border-transparent border-black dark:hover:bg-black dark:hover:text-white dark:hover:border-white"
-            >
-              {isConnected ? "0x1234...5678" : "Connect Wallet"}
-            </Button>
+            <>
+              <Button
+                variant={isConnected ? "outline" : "default"}
+                onClick={handleConnect}
+                className="hover:bg-white hover:text-black transition duration-500 ease-in-out border-2 border-transparent border-black dark:hover:bg-black dark:hover:text-white dark:hover:border-white"
+              >
+                {isConnected ? walletAddress : "Connect Wallet"}
+              </Button>
+
+              {/* Logout Button */}
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                className="p-2 rounded-full border hover:border"
+              >
+                <LogOut
+                  strokeWidth={2.5}
+                  className="h-5 w-5 text-gray-600 hover:text-red-500"
+                />
+              </Button>
+            </>
           )}
 
           <ModeToggle />

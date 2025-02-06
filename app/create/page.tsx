@@ -16,7 +16,7 @@ export default function CreateCampaignPage() {
     title: "",
     description: "",
     goal: "",
-    image: null as File | null,
+    image: "",
     milestones: [
       { title: "", amount: "" },
       { title: "", amount: "" },
@@ -114,34 +114,16 @@ export default function CreateCampaignPage() {
 
               <div className="space-y-2">
                 <Label className="pl-1">Campaign Image</Label>
-                <div className="flex items-center gap-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => document.getElementById("image")?.click()}
-                  >
-                    <ImagePlus className="mr-2 h-4 w-4" />
-                    Upload Image
-                  </Button>
-                  <input
-                    id="image"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        image: e.target.files?.[0] || null,
-                      })
-                    }
-                  />
-                  {formData.image && (
-                    <span className="text-sm text-muted-foreground">
-                      {formData.image.name}
-                    </span>
-                  )}
-                </div>
+                <Input
+                  id="goal"
+                  type="number"
+                  placeholder="Enter Image URL"
+                  value={formData.image}
+                  
+                  onChange={(e) =>
+                    setFormData({ ...formData, goal: e.target.value })
+                  }
+                />
               </div>
             </div>
           </Card>

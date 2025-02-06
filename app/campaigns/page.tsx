@@ -69,8 +69,8 @@ export default function CampaignsPage() {
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.3 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.3 }}
             className="mt-2 text-lg text-muted-foreground"
           >
             Every contribution makes a difference. Support a cause that matters
