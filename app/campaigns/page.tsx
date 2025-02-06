@@ -8,50 +8,29 @@ import { Search, Filter } from "lucide-react";
 import { useState } from "react";
 import { CampaignCard } from "@/components/campaign-card";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 
-// Mock data for demonstration
-const mockCampaigns = [
-  {
-    id: "1",
-    title: "Clean Water Initiative",
-    description: "Providing clean water to rural communities",
-    image: "https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?w=800&h=400&fit=crop",
-    raised: 50000,
-    goal: 100000,
-    daysLeft: 15,
-  },
-  {
-    id: "2",
-    title: "Education for All",
-    description: "Supporting underprivileged children's education",
-    image: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=800&h=400&fit=crop",
-    raised: 75000,
-    goal: 150000,
-    daysLeft: 30,
-  },
-  {
-    id: "3",
-    title: "Healthcare Access",
-    description: "Improving healthcare facilities in remote areas Improving healthcare facilities in remote areas",
-    image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800&h=400&fit=crop",
-    raised: 25000,
-    goal: 200000,
-    daysLeft: 45,
-  },
-  {
-    id: "4",
-    title: "Healthcare Access",
-    description: "Improving healthcare facilities in remote areas",
-    image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800&h=400&fit=crop",
-    raised: 25000,
-    goal: 200000,
-    daysLeft: 45,
-  },
-];
 
 export default function CampaignsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState("all");
+  const [campaigns, setCampaigns] = useState([]);
+
+  useEffect(() => {
+    const fetchCampaigns = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/campaigns");
+        if (!response.ok) {
+          throw new Error("Failed to fetch campaigns");
+        }
+        const data = await response.json();
+        setCampaigns(data);
+      } catch (error) {
+        console.error("Error fetching campaigns:", error);
+      }
+    };
+    fetchCampaigns();
+  }, [campaigns]);
 
   return (
     <main className="min-h-screen bg-background">
@@ -110,8 +89,8 @@ export default function CampaignsPage() {
       {/* Full-width Campaigns Grid */}
       <div className="w-full px-20 mt-8">
         <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-          {mockCampaigns.map((campaign) => (
-            <CampaignCard key={campaign.id} campaign={campaign} />
+          {campaigns.map((campaign) => (
+            <CampaignCard key={campaign} campaign={campaign} />
           ))}
         </div>
       </div>

@@ -6,30 +6,64 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import { ImagePlus, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+import axios from "axios";
 
 export default function CreateCampaignPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    goal: "",
-    image: null as File | null,
-    milestones: [
-      { title: "", amount: "" },
-      { title: "", amount: "" },
-      { title: "", amount: "" },
-    ],
-  });
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [image, setImage] = useState("");
+  const [raised, setRaised] = useState("");
+  const [goal, setGoal] = useState("");
+  const [daysLeft, setDaysLeft] = useState("");
+  const [milestones, setMilestones] = useState([
+    { title: "", amount: "" },
+    { title: "", amount: "" },
+    { title: "", amount: "" },
+  ]);
 
+  useEffect(() => {
+    setDaysLeft("30");
+    setRaised("75000");
+  }, []);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => setIsSubmitting(false), 2000);
-  };
+  
+    const data1 = {
+      title,
+      description,
+      image,
+      raised,
+      goal,
+      daysLeft,
+      milestones,
+    };
 
+    console.log(data1);
+
+    try {
+      const response = await axios.post("http://localhost:5000/create-campaign", {
+        data1,
+      });
+  
+      const data = await response.data;
+      if (data.success) {
+        alert("Campaign created successfully!");
+      } else { 
+        alert(data.message || "An error occurred.");
+      }
+    } catch (error) {
+      console.error("Error creating campaign:", error);
+      alert("Error creating campaign");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
@@ -71,9 +105,9 @@ export default function CreateCampaignPage() {
                 <Input
                   id="title"
                   placeholder="Enter campaign title"
-                  value={formData.title}
+                  value={title}
                   onChange={(e) =>
-                    setFormData({ ...formData, title: e.target.value })
+                    setTitle(e.target.value)
                   }
                   required
                 />
@@ -87,9 +121,9 @@ export default function CreateCampaignPage() {
                   id="description"
                   placeholder="Describe your campaign"
                   className="min-h-[150px]"
-                  value={formData.description}
+                  value={description}
                   onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
+                    setDescription(e.target.value)
                   }
                   required
                 />
@@ -103,45 +137,26 @@ export default function CreateCampaignPage() {
                   id="goal"
                   type="number"
                   placeholder="Enter amount"
-                  value={formData.goal}
+                  value={goal}
                   min="1000"
                   onChange={(e) =>
-                    setFormData({ ...formData, goal: e.target.value })
+                    setGoal(e.target.value)
                   }
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="pl-1">Campaign Image</Label>
-                <div className="flex items-center gap-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => document.getElementById("image")?.click()}
-                  >
-                    <ImagePlus className="mr-2 h-4 w-4" />
-                    Upload Image
-                  </Button>
-                  <input
-                    id="image"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        image: e.target.files?.[0] || null,
-                      })
-                    }
-                  />
-                  {formData.image && (
-                    <span className="text-sm text-muted-foreground">
-                      {formData.image.name}
-                    </span>
-                  )}
-                </div>
+                <Label className="pl-1">Image Link</Label>
+                <Input
+                  id="goal"
+                  type="text"
+                  placeholder="Enter Image URL"
+                  value={image}
+                  onChange={(e) =>
+                    setImage(e.target.value)
+                  }
+                />
               </div>
             </div>
           </Card>
@@ -159,7 +174,7 @@ export default function CreateCampaignPage() {
               </p>
 
               <div className="mt-6 space-y-4">
-                {formData.milestones.map((milestone, index) => (
+                {milestones.map((milestone, index) => (
                   <div key={index} className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label
@@ -173,12 +188,9 @@ export default function CreateCampaignPage() {
                         placeholder="e.g., Initial Setup"
                         value={milestone.title}
                         onChange={(e) => {
-                          const newMilestones = [...formData.milestones];
+                          const newMilestones = [...milestones];
                           newMilestones[index].title = e.target.value;
-                          setFormData({
-                            ...formData,
-                            milestones: newMilestones,
-                          });
+                          setMilestones(newMilestones);
                         }}
                         required
                       />
@@ -197,12 +209,9 @@ export default function CreateCampaignPage() {
                         value={milestone.amount}
                         min="0"
                         onChange={(e) => {
-                          const newMilestones = [...formData.milestones];
+                          const newMilestones = [...milestones];
                           newMilestones[index].amount = e.target.value;
-                          setFormData({
-                            ...formData,
-                            milestones: newMilestones,
-                          });
+                          setMilestones(newMilestones);
                         }}
                         required
                       />
