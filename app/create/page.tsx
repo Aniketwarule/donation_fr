@@ -15,7 +15,7 @@ export default function CreateCampaignPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [image, setImage] = useState("");
+  const [imageUrl, setImage] = useState("");
   const [raised, setRaised] = useState("");
   const [goal, setGoal] = useState("");
   const [daysLeft, setDaysLeft] = useState("");
@@ -36,7 +36,7 @@ export default function CreateCampaignPage() {
     const data1 = {
       title,
       description,
-      image,
+      imageUrl,
       raised,
       goal,
       daysLeft,
@@ -152,7 +152,7 @@ export default function CreateCampaignPage() {
                   id="goal"
                   type="text"
                   placeholder="Enter Image URL"
-                  value={image}
+                  value={imageUrl}
                   onChange={(e) =>
                     setImage(e.target.value)
                   }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { Navbar } from "@/components/navbar";
 import { Button } from "@/components/ui/button";
@@ -16,22 +16,34 @@ import {
   CheckCircle2,
   AlertCircle,
 } from "lucide-react";
+import axios from "axios";
 
-export default function CampaignPage({ params }: { params: { id: string } }) {
+export default function CampaignPage() {
   const router = useRouter();
-  const { id } = params;
+  const { id } = useParams();
   const [campaignData, setCampaignData] = useState<any>(null);
   const [donationAmount, setDonationAmount] = useState("");
+  const [milestones, setMilestones] = useState([]);
+
+  console.log(id)
 
   useEffect(() => {
     async function fetchCampaign() {
       try {
-        const response = await fetch(`/api/campaigns/${id}`);
-        const data = await response.json();
-        if (response.ok) {
+        const response = await axios.get(`http://localhost:5000/campaigns/${id}`);
+        const data = await response.data;
+        if (response.data) {
+          console.log(data)
           setCampaignData(data);
         } else {
           console.error("Error fetching campaign:", data.error);
+        }
+
+        const response2 = await axios.get(`http://localhost:5000/milestones`);
+        const data2 = await response2.data;
+        if (response2.data) {
+          console.log(data2)
+          setMilestones(data2);
         }
       } catch (error) {
         console.error("Error:", error);
@@ -90,7 +102,8 @@ export default function CampaignPage({ params }: { params: { id: string } }) {
 
               <TabsContent value="milestones">
                 <div className="space-y-4">
-                  {campaignData.milestones.map((milestone: any, index: number) => (
+                  {milestones.map((milestone: any, index: number) => (
+                    milestone.campaignId === campaignData.id && (
                     <Card key={index} className="p-4 border-2 border-transparent hover:border-gray-300">
                       <div className="flex items-center justify-between ">
                         <div>
@@ -104,6 +117,7 @@ export default function CampaignPage({ params }: { params: { id: string } }) {
                         )}
                       </div>
                     </Card>
+                    )
                   ))}
                 </div>
               </TabsContent>

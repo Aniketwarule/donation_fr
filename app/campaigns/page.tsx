@@ -30,7 +30,7 @@ export default function CampaignsPage() {
       }
     };
     fetchCampaigns();
-  }, [campaigns]);
+  }, []);
 
   return (
     <main className="min-h-screen bg-background">
@@ -90,7 +90,7 @@ export default function CampaignsPage() {
       <div className="w-full px-20 mt-8">
         <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
           {campaigns.map((campaign) => (
-            <CampaignCard key={campaign} campaign={campaign} />
+            <CampaignCard key={campaign?.id} campaign={campaign} />
           ))}
         </div>
       </div>
