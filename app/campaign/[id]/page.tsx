@@ -56,7 +56,7 @@ export default function CampaignPage() {
   if (!campaignData) {
     return <p className="text-center text-gray-500 mt-10">Loading...</p>;
   }
-
+  const img1 = campaignData.imageUrl.split("/")[2];
   const progress = (parseInt(campaignData.raised || "0") / parseInt(campaignData.goal || "1")) * 100;
 
   return (
@@ -68,7 +68,7 @@ export default function CampaignPage() {
             <div className="p-4 pl-0 rounded-lg shadow-md">
               <div className="relative aspect-video overflow-hidden rounded-lg">
                 <Image
-                  src={campaignData.imageUrl || "https://via.placeholder.com/800x400"}
+                  src={`http://localhost:5000/uploads/${img1}`}
                   alt={campaignData.title}
                   fill
                   className="object-cover"

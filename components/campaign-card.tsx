@@ -73,7 +73,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
             href={`/campaign/${campaign.id}`}
             className="w-full flex justify-center"
           >
-            <Button className="w-5/6 hover:bg-green-200">Donate Now</Button>
+            <Button className="w-80 hover:bg-green-200">Donate Now</Button>
           </Link>
         </CardFooter>
       </Card>
@@ -131,12 +131,7 @@ export function CampaignCard2({ campaign }: CampaignCardProps) {
 
         {/* Keep the button aligned at the bottom */}
         <CardFooter className="p-4 pt-0">
-          <Link
-            href={`/campaign/${campaign.id}`}
-            className="w-full flex justify-center"
-          >
-            <Button className="w-5/6 hover:bg-green-200">Withdraw</Button>
-          </Link>
+            <Button className="w-80 hover:bg-green-200">Withdraw</Button>
         </CardFooter>
       </Card>
     </motion.div>

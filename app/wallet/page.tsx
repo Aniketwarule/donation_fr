@@ -47,10 +47,12 @@ const withdrawals = [
 export default function WalletPage() {
   const {address, isConnected} = useAccount();
   const {data: balance} = useBalance({address: address})
-  const eths = formatEther(balance?.value);
+  const eths = balance?.value ? formatEther(balance.value) : "0";
 
   const copyAddress = () => {
-    navigator.clipboard.writeText(address?.toString());
+    if (address) {
+      navigator.clipboard.writeText(address.toString());
+    }
   };
 
   if(!isConnected){
