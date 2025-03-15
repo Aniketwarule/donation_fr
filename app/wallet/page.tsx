@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowUpRight, Copy, LogOut } from "lucide-react";
-import { useState } from "react";
-import { formatEther } from "viem";
+import { useEffect, useState } from "react";
 import { useAccount, useBalance } from "wagmi";
 
 // Mock data
@@ -45,24 +44,36 @@ const withdrawals = [
 ];
 
 export default function WalletPage() {
-  const {address, isConnected} = useAccount();
-  const {data: balance} = useBalance({address: address})
-  const eths = formatEther(balance?.value);
+  const { address, isConnected } = useAccount();
+  const { data: balance } = useBalance({ address });
+
+  // ✅ Prevents hydration error by rendering only on the client
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const copyAddress = () => {
-    navigator.clipboard.writeText(address?.toString());
+    if (address) navigator.clipboard.writeText(address.toString());
   };
 
-  if(!isConnected){
-    return <div>
-      No wallet connected
-    </div>
+  if (!isClient) {
+    return <div className="flex h-screen items-center justify-center">Loading...</div>;
+  }
+
+  if (!isConnected) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p>No wallet connected</p>
+      </div>
+    );
   }
 
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
-      
+
       <div className="container pt-24">
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Wallet Info */}
@@ -72,7 +83,7 @@ export default function WalletPage() {
               <div>
                 <p className="text-sm text-muted-foreground">Address</p>
                 <div className="mt-1 flex items-center gap-2">
-                  <code className="rounded bg-muted px-2 py-1">{address}</code>
+                  <code className="rounded bg-muted px-2 py-1">{address || "N/A"}</code>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -85,7 +96,7 @@ export default function WalletPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Balance</p>
-                <p className="text-2xl font-bold">{eths} eth</p>
+                <p className="text-2xl font-bold">{balance ? `${balance.formatted} ETH` : "0.00 ETH"}</p>
               </div>
               <Button variant="destructive" className="w-full">
                 <LogOut className="mr-2 h-4 w-4" />
@@ -109,14 +120,14 @@ export default function WalletPage() {
                       <div className="flex items-center justify-between">
                         <div>
                           <h3 className="font-medium">{donation.campaign}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {donation.date}
-                          </p>
+                          <p className="text-sm text-muted-foreground">{donation.date}</p>
                         </div>
                         <div className="text-right">
                           <p className="font-medium">₹{donation.amount}</p>
                           <a
-                            href="#"
+                            href={donation.txHash ? `https://etherscan.io/tx/${donation.txHash}` : "#"}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="flex items-center text-sm text-primary hover:underline"
                           >
                             {donation.txHash}
@@ -136,14 +147,10 @@ export default function WalletPage() {
                       <div className="flex items-center justify-between">
                         <div>
                           <h3 className="font-medium">{withdrawal.campaign}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {withdrawal.date}
-                          </p>
+                          <p className="text-sm text-muted-foreground">{withdrawal.date}</p>
                         </div>
                         <div className="text-right">
-                          <p className="font-medium">
-                            ₹{withdrawal.amount.toLocaleString()}
-                          </p>
+                          <p className="font-medium">₹{withdrawal.amount.toLocaleString()}</p>
                           <span
                             className={`inline-block rounded-full px-2 py-0.5 text-xs ${
                               withdrawal.status === "completed"
