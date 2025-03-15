@@ -90,6 +90,7 @@ export default function CampaignsPage() {
       <div className="w-full px-20 mt-8">
         <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
           {campaigns.map((campaign: any) => (
+            
             <CampaignCard key={campaign?.id} campaign={campaign} />
           ))}
         </div>
