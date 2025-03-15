@@ -18,7 +18,8 @@ import {
 import axios from "axios";
 import { useWriteContract } from "wagmi";
 import { parseEther } from "viem"; // ✅ Converts ETH to Wei
-import { contract } from "../../../lib/contract";
+import { contract } from "../../../../lib/contract";
+import { headers } from "next/headers";
 
 export default function CampaignPage() {
   const router = useRouter();
@@ -35,6 +36,7 @@ export default function CampaignPage() {
       try {
         const response = await axios.get(`http://localhost:5000/campaigns/${id}`);
         if (response.data) {
+          console.log(response.data);
           setCampaignData(response.data);
         }
 
@@ -50,24 +52,32 @@ export default function CampaignPage() {
     if (id) fetchCampaign();
   }, [id]);
 
-  const handleDonate = () => {
+  const handleDonate = async () => {
     if (!donationAmount) {
       alert("Please enter a donation amount!");
       return;
     }
 
+    // console.log(campaignData)
     try {
-      console.log('hello all kaise')
       writeContract({
         address: contract.address as `0x${string}`, // ✅ Cast to `0x${string}` to avoid TS error
         abi: contract.abi,
         functionName: "donate",
         value: parseEther(donationAmount), // ✅ Convert ETH to Wei
         args: [
-          "0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2", // Replace with real NGO Address
+          campaignData.walletaddress as `0x${string}`, // Replace with real NGO Address
           campaignData.title, // Campaign Name
         ],
       });
+
+      const response = await axios.post(`http://localhost:5000/campaigns${campaignData.id}/updateRaised`, {amount: donationAmount}, {
+          headers: {  
+            'Content-Type': 'application/json'
+          }
+      });
+      setCampaignData(response.data);
+      console.log(response.data);
     } catch (err) {
       console.error("Error while donating:", err);
     }
@@ -77,7 +87,7 @@ export default function CampaignPage() {
     return <p className="text-center text-gray-500 mt-10">Loading...</p>;
   }
 
-  const progress = (parseInt(campaignData.raised || "0") / parseInt(campaignData.goal || "1")) * 100;
+  const progress = (parseFloat(campaignData.raised || "0.0") / parseFloat(campaignData.goal || "1")) * 100;
 
   return (
     <main className="min-h-screen bg-background">
@@ -149,10 +159,10 @@ export default function CampaignPage() {
               <div className="space-y-4">
                 <div>
                   <h3 className="text-lg font-semibold">
-                    ₹{parseInt(campaignData.raised || "0").toLocaleString()} raised
+                    {parseFloat(campaignData.raised || "0").toLocaleString()} ETH raised
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    of ₹{parseInt(campaignData.goal || "1").toLocaleString()} goal
+                    of {parseFloat(campaignData.goal || "1").toLocaleString()} ETH goal
                   </p>
                 </div>
 

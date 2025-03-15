@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowUpRight, Copy, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
+import { formatEther } from "viem";
 import { useAccount, useBalance } from "wagmi";
 
 // Mock data
@@ -46,6 +47,9 @@ const withdrawals = [
 export default function WalletPage() {
   const { address, isConnected } = useAccount();
   const { data: balance } = useBalance({ address });
+  const eths = formatEther(balance.value)
+  console.log(balance);
+  
 
   // ✅ Prevents hydration error by rendering only on the client
   const [isClient, setIsClient] = useState(false);
@@ -96,7 +100,7 @@ export default function WalletPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Balance</p>
-                <p className="text-2xl font-bold">{balance ? `${balance.formatted} ETH` : "0.00 ETH"}</p>
+                <p className="text-2xl font-bold">{eths ? `${eths} ETH` : "0.00 ETH"}</p>
               </div>
               <Button variant="destructive" className="w-full">
                 <LogOut className="mr-2 h-4 w-4" />

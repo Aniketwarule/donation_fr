@@ -24,6 +24,7 @@ export default function CampaignsPage() {
           throw new Error("Failed to fetch campaigns");
         }
         const data = await response.json();
+        console.log(data)
         setCampaigns(data);
       } catch (error) {
         console.error("Error fetching campaigns:", error);
@@ -31,6 +32,8 @@ export default function CampaignsPage() {
     };
     fetchCampaigns();
   }, []);
+
+  console.log(campaigns)
 
   return (
     <main className="min-h-screen bg-background">
@@ -90,6 +93,7 @@ export default function CampaignsPage() {
       <div className="w-full px-20 mt-8">
         <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
           {campaigns.map((campaign: any) => (
+            
             <CampaignCard key={campaign?.id} campaign={campaign} />
           ))}
         </div>

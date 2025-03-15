@@ -2,11 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
-import { Wallet2, LogOut } from "lucide-react";
+import { Wallet2 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 
 export function Navbar() {
+  const pathname = usePathname();
+
   const { address, isConnected } = useAccount();
   const { connectors, connect } = useConnect();
   const { disconnect } = useDisconnect();
@@ -22,6 +25,14 @@ export function Navbar() {
         </Link>
 
         <div className="flex items-center space-x-4">
+          <Link
+            href="/mycampaign"
+            className={`text-sm hover:text-gray-400 font-medium transition duration-500 ease-in-out ${
+              pathname === "/mycampaign" ? "text-blue-300 font-bold" : ""
+            }`}
+          >
+             My Campaigns
+          </Link>
           <Link
             href="/campaigns"
             className={`text-sm hover:text-gray-400 font-medium transition duration-500 ease-in-out ${
@@ -39,15 +50,18 @@ export function Navbar() {
             Create Campaign
           </Link>
           {isConnected && (
-            <Link href="/wallet" className="text-sm font-medium">
+            <Link href="/wallet" className="text-sm font-medium hover:text-gray-400 transition duration-500 ease-in-out">
               Wallet
             </Link>
           )}
 
-          {/* ✅ Show Wallet Address if Connected, Else Show "Connect Wallet" Button */}
           <Button
             variant={isConnected ? "outline" : "default"}
-            onClick={isConnected ? () => disconnect() : () => connect({ connector: connectors[0] })}
+            onClick={
+              isConnected
+                ? () => disconnect()
+                : () => connect({ connector: connectors[0] })
+            }
             className="hover:bg-white hover:text-black transition duration-500 ease-in-out border-2 border-transparent border-black dark:hover:bg-black dark:hover:text-white dark:hover:border-white"
           >
             {isConnected ? `${address?.slice(0, 6)}...${address?.slice(-4)}` : "Connect Wallet"}
