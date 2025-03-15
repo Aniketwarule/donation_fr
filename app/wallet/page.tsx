@@ -6,6 +6,8 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowUpRight, Copy, LogOut } from "lucide-react";
 import { useState } from "react";
+import { formatEther } from "viem";
+import { useAccount, useBalance } from "wagmi";
 
 // Mock data
 const donations = [
@@ -43,12 +45,19 @@ const withdrawals = [
 ];
 
 export default function WalletPage() {
-  const [address] = useState("0x1234...5678");
-  const [balance] = useState(5000);
+  const {address, isConnected} = useAccount();
+  const {data: balance} = useBalance({address: address})
+  const eths = formatEther(balance?.value);
 
   const copyAddress = () => {
-    navigator.clipboard.writeText(address);
+    navigator.clipboard.writeText(address?.toString());
   };
+
+  if(!isConnected){
+    return <div>
+      No wallet connected
+    </div>
+  }
 
   return (
     <main className="min-h-screen bg-background">
@@ -76,7 +85,7 @@ export default function WalletPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Balance</p>
-                <p className="text-2xl font-bold">₹{balance.toLocaleString()}</p>
+                <p className="text-2xl font-bold">{eths} eth</p>
               </div>
               <Button variant="destructive" className="w-full">
                 <LogOut className="mr-2 h-4 w-4" />

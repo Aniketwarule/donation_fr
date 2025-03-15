@@ -6,16 +6,18 @@ import { Wallet2, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { useAccount, useConnect, useDisconnect } from "wagmi";
 
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
-  const [walletAddress, setWalletAddress] = useState("");
+  const { address, isConnected } = useAccount();
+  const { connectors, connect } = useConnect(); // ✅ Use available connectors
+  const { disconnect } = useDisconnect(); // Disconnect wallet
 
-  // Check login status on mount
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   useEffect(() => {
     const loginStatus = localStorage.getItem("isLoggedIn");
     if (loginStatus === "true") {
@@ -33,11 +35,6 @@ export function Navbar() {
     localStorage.removeItem("isLoggedIn");
     setIsLoggedIn(false);
     router.push("/login");
-  };
-
-  const handleConnect = () => {
-    setIsConnected(true);
-    setWalletAddress("0xAbCd...EfGh"); // Replace with real wallet logic
   };
 
   return (
@@ -67,13 +64,12 @@ export function Navbar() {
           >
             Create Campaign
           </Link>
-          {isConnected ? (
+          {isConnected && (
             <Link href="/wallet" className="text-sm font-medium">
               Wallet
             </Link>
-          ) : null}
+          )}
 
-          {/* Conditional rendering of Log In / Connect Wallet / Logout */}
           {!isLoggedIn ? (
             <Button
               onClick={handleLogin}
@@ -85,13 +81,16 @@ export function Navbar() {
             <>
               <Button
                 variant={isConnected ? "outline" : "default"}
-                onClick={handleConnect}
+                onClick={
+                  isConnected
+                    ? () => disconnect()
+                    : () => connect({ connector: connectors[0] }) // ✅ Connect to first available wallet
+                }
                 className="hover:bg-white hover:text-black transition duration-500 ease-in-out border-2 border-transparent border-black dark:hover:bg-black dark:hover:text-white dark:hover:border-white"
               >
-                {isConnected ? walletAddress : "Connect Wallet"}
+                {isConnected ? `${address?.slice(0, 6)}...${address?.slice(-4)}` : "Connect Wallet"}
               </Button>
 
-              {/* Logout Button */}
               <Button
                 onClick={handleLogout}
                 variant="outline"
