@@ -36,7 +36,7 @@ export function Navbar() {
           <Link
             href="/campaigns"
             className={`text-sm hover:text-gray-400 font-medium transition duration-500 ease-in-out ${
-              pathname === "/campaigns" ? "text-blue-300 font-bold" : ""
+              isConnected && location.pathname === "/campaigns" ? "text-blue-300 font-bold" : ""
             }`}
           >
             Campaigns
@@ -44,7 +44,7 @@ export function Navbar() {
           <Link
             href="/create"
             className={`text-sm hover:text-gray-400 font-medium transition duration-500 ease-in-out ${
-              pathname === "/create" ? "text-blue-300 font-bold" : ""
+              isConnected && location.pathname === "/create" ? "text-blue-300 font-bold" : ""
             }`}
           >
             Create Campaign

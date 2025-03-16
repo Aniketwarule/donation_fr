@@ -35,6 +35,7 @@ export default function CampaignsPage() {
           throw new Error("Failed to fetch campaigns");
         }
         const data = await response.json();
+        console.log(data)
         console.log(data);
         setCampaigns(data);
       } catch (error) {

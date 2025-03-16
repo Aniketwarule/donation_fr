@@ -12,11 +12,14 @@ import { Input } from "@/components/ui/input";
 import {
   Clock,
   Users,
-  ArrowUpRight,
   CheckCircle2,
   AlertCircle,
 } from "lucide-react";
 import axios from "axios";
+import { useWriteContract } from "wagmi";
+import { parseEther } from "viem"; // ✅ Converts ETH to Wei
+import { contract } from "../../../../lib/contract";
+import { headers } from "next/headers";
 
 export default function CampaignPage() {
   const router = useRouter();
@@ -25,25 +28,21 @@ export default function CampaignPage() {
   const [donationAmount, setDonationAmount] = useState("");
   const [milestones, setMilestones] = useState([]);
 
-  console.log(id)
+  // ✅ useWriteContract should be at the top level
+  const { data, isPending, isSuccess, writeContract } = useWriteContract();
 
   useEffect(() => {
     async function fetchCampaign() {
       try {
         const response = await axios.get(`http://localhost:5000/campaigns/${id}`);
-        const data = await response.data;
         if (response.data) {
-          console.log(data)
-          setCampaignData(data);
-        } else {
-          console.error("Error fetching campaign:", data.error);
+          console.log(response.data);
+          setCampaignData(response.data);
         }
 
         const response2 = await axios.get(`http://localhost:5000/milestones`);
-        const data2 = await response2.data;
         if (response2.data) {
-          console.log(data2)
-          setMilestones(data2);
+          setMilestones(response2.data);
         }
       } catch (error) {
         console.error("Error:", error);
@@ -53,12 +52,44 @@ export default function CampaignPage() {
     if (id) fetchCampaign();
   }, [id]);
 
+  const handleDonate = async () => {
+    if (!donationAmount) {
+      alert("Please enter a donation amount!");
+      return;
+    }
+
+    // console.log(campaignData)
+    try {
+      writeContract({
+        address: contract.address as `0x${string}`, // ✅ Cast to `0x${string}` to avoid TS error
+        abi: contract.abi,
+        functionName: "donate",
+        value: parseEther(donationAmount), // ✅ Convert ETH to Wei
+        args: [
+          campaignData.walletaddress as `0x${string}`, // Replace with real NGO Address
+          campaignData.title, // Campaign Name
+        ],
+      });
+
+      const response = await axios.post(`http://localhost:5000/campaigns${campaignData.id}/updateRaised`, {amount: donationAmount}, {
+          headers: {  
+            'Content-Type': 'application/json'
+          }
+      });
+      setCampaignData(response.data);
+      console.log(response.data);
+    } catch (err) {
+      console.error("Error while donating:", err);
+    }
+  };
+
   if (!campaignData) {
     return <p className="text-center text-gray-500 mt-10">Loading...</p>;
   }
-  const img1 = campaignData.imageUrl.split("/")[2];
-  const progress = (parseInt(campaignData.raised || "0") / parseInt(campaignData.goal || "1")) * 100;
 
+  const progress = (parseFloat(campaignData.raised || "0.0") / parseFloat(campaignData.goal || "1")) * 100;
+  const img1 = campaignData.imageUrl.split("/")[2];
+  
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
@@ -106,7 +137,7 @@ export default function CampaignPage() {
                   {milestones.map((milestone: any, index: number) => (
                     milestone.campaignId === campaignData.id && (
                     <Card key={index} className="p-4 border-2 border-transparent hover:border-gray-300">
-                      <div className="flex items-center justify-between ">
+                      <div className="flex items-center justify-between">
                         <div>
                           <p className="font-medium">{milestone.title}</p>
                           <p className="text-sm text-muted-foreground">₹{milestone.amount}</p>
@@ -137,10 +168,10 @@ export default function CampaignPage() {
               <div className="space-y-4">
                 <div>
                   <h3 className="text-lg font-semibold">
-                    ₹{parseInt(campaignData.raised || "0").toLocaleString()} raised
+                    {parseFloat(campaignData.raised || "0").toLocaleString()} ETH raised
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    of ₹{parseInt(campaignData.goal || "1").toLocaleString()} goal
+                    of {parseFloat(campaignData.goal || "1").toLocaleString()} ETH goal
                   </p>
                 </div>
 
@@ -149,13 +180,17 @@ export default function CampaignPage() {
                 <div className="space-y-4">
                   <Input
                     type="number"
-                    placeholder="Enter amount in ₹"
+                    placeholder="Enter amount in ETH"
                     value={donationAmount}
                     onChange={(e) => setDonationAmount(e.target.value)}
                   />
-                  <Button className="w-full bg-green-300" size="lg">
-                    Donate Now
+                  <Button className="w-full bg-green-300" size="lg"
+                    onClick={handleDonate}
+                    disabled={isPending}
+                  >
+                    {isPending ? "Processing..." : "Donate Now"}
                   </Button>
+                  {isSuccess && <p className="text-green-500">Transaction Successful! 🎉</p>}
                 </div>
 
                 <p className="text-center text-sm text-muted-foreground">

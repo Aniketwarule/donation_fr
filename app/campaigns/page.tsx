@@ -24,6 +24,7 @@ export default function CampaignsPage() {
           throw new Error("Failed to fetch campaigns");
         }
         const data = await response.json();
+        console.log(data)
         setCampaigns(data);
       } catch (error) {
         console.error("Error fetching campaigns:", error);
@@ -31,6 +32,8 @@ export default function CampaignsPage() {
     };
     fetchCampaigns();
   }, []);
+
+  console.log(campaigns)
 
   return (
     <main className="min-h-screen bg-background">
