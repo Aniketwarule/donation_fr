@@ -58,7 +58,7 @@ export default function CampaignPage() {
       return;
     }
 
-    // console.log(campaignData)
+    console.log("contract address: ", contract.address)
     try {
       writeContract({
         address: contract.address as `0x${string}`, // ✅ Cast to `0x${string}` to avoid TS error
@@ -71,7 +71,7 @@ export default function CampaignPage() {
         ],
       });
 
-      const response = await axios.post(`http://localhost:5000/campaigns${campaignData.id}/updateRaised`, {amount: donationAmount}, {
+      const response = await axios.post(`http://localhost:5000/campaigns/${campaignData.id}/updateRaised`, {amount: donationAmount}, {
           headers: {  
             'Content-Type': 'application/json'
           }
