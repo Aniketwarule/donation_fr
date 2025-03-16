@@ -1,24 +1,6 @@
 export const contract = {
-    address: "0xD49bBdCF6d0f44224009516E821DACe437b69b36",
+    address: "0xc2Dc9308535BE69d943b331d0196569F552da450",
     abi: [
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "ngo",
-                    "type": "address"
-                },
-                {
-                    "internalType": "string",
-                    "name": "campaign",
-                    "type": "string"
-                }
-            ],
-            "name": "donate",
-            "outputs": [],
-            "stateMutability": "payable",
-            "type": "function"
-        },
         {
             "inputs": [],
             "stateMutability": "nonpayable",
@@ -75,8 +57,19 @@ export const contract = {
             "type": "event"
         },
         {
-            "inputs": [],
-            "name": "withdraw",
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "ngo",
+                    "type": "address"
+                },
+                {
+                    "internalType": "string",
+                    "name": "campaign",
+                    "type": "string"
+                }
+            ],
+            "name": "donate",
             "outputs": [],
             "stateMutability": "payable",
             "type": "function"
@@ -175,6 +168,35 @@ export const contract = {
             "inputs": [
                 {
                     "internalType": "address",
+                    "name": "donor",
+                    "type": "address"
+                }
+            ],
+            "name": "getUserDonations",
+            "outputs": [
+                {
+                    "internalType": "uint256[]",
+                    "name": "",
+                    "type": "uint256[]"
+                },
+                {
+                    "internalType": "string[]",
+                    "name": "",
+                    "type": "string[]"
+                },
+                {
+                    "internalType": "address[]",
+                    "name": "",
+                    "type": "address[]"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
                     "name": "",
                     "type": "address"
                 }
@@ -214,6 +236,19 @@ export const contract = {
                 }
             ],
             "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "withdraw",
+            "outputs": [],
+            "stateMutability": "nonpayable",
             "type": "function"
         }
     ]

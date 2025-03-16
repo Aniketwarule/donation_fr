@@ -108,7 +108,7 @@ export function CampaignCard2({ campaign }: CampaignCardProps) {
         address: contract.address as `0x${string}`,
         abi: contract.abi,
         functionName: "withdraw",
-        value: BigInt(Math.round(0.0001 * 1e18)),
+        args: [BigInt(Math.round(0.0001 * 1e18))],
       });
 
       console.log("Withdrawal TX:", tx);
