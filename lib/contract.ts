@@ -1,5 +1,5 @@
 export const contract = {
-    address: "0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8",
+    address: "0xD49bBdCF6d0f44224009516E821DACe437b69b36",
     abi: [
         {
             "inputs": [
@@ -75,47 +75,49 @@ export const contract = {
             "type": "event"
         },
         {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
-                }
-            ],
+            "inputs": [],
             "name": "withdraw",
             "outputs": [],
-            "stateMutability": "nonpayable",
+            "stateMutability": "payable",
             "type": "function"
         },
         {
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "",
+                    "name": "ngo",
                     "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "name": "donations",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
                 },
                 {
                     "internalType": "string",
                     "name": "campaign",
                     "type": "string"
+                }
+            ],
+            "name": "getCampaignDonors",
+            "outputs": [
+                {
+                    "internalType": "address[]",
+                    "name": "",
+                    "type": "address[]"
+                },
+                {
+                    "internalType": "uint256[]",
+                    "name": "",
+                    "type": "uint256[]"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getContractBalance",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
                 }
             ],
             "stateMutability": "view",
@@ -137,21 +139,14 @@ export const contract = {
             "name": "getDonations",
             "outputs": [
                 {
-                    "components": [
-                        {
-                            "internalType": "uint256",
-                            "name": "amount",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "string",
-                            "name": "campaign",
-                            "type": "string"
-                        }
-                    ],
-                    "internalType": "struct DonationTracking.Donation[]",
+                    "internalType": "uint256[]",
                     "name": "",
-                    "type": "tuple[]"
+                    "type": "uint256[]"
+                },
+                {
+                    "internalType": "string[]",
+                    "name": "",
+                    "type": "string[]"
                 }
             ],
             "stateMutability": "view",

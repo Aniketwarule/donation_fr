@@ -4,67 +4,45 @@ import { Navbar } from "@/components/navbar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { contract } from "@/lib/contract";
 import { ArrowUpRight, Copy, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { formatEther } from "viem";
-import { useAccount, useBalance } from "wagmi";
-
-// Mock data
-const donations = [
-  {
-    id: "1",
-    campaign: "Clean Water Initiative",
-    amount: 1000,
-    date: "2024-02-20",
-    txHash: "0x1234...5678",
-  },
-  {
-    id: "2",
-    campaign: "Education for All",
-    amount: 500,
-    date: "2024-02-18",
-    txHash: "0x8765...4321",
-  },
-];
-
-const withdrawals = [
-  {
-    id: "1",
-    campaign: "Clean Water Initiative",
-    amount: 30000,
-    status: "pending",
-    date: "2024-02-21",
-  },
-  {
-    id: "2",
-    campaign: "Education for All",
-    amount: 20000,
-    status: "completed",
-    date: "2024-02-19",
-  },
-];
+import { useAccount, useBalance, useReadContract } from "wagmi";
 
 export default function WalletPage() {
   const { address, isConnected } = useAccount();
-  const { data: balance } = useBalance({ address });
-  const eths = formatEther(balance.value)
-  console.log(balance);
-  
 
-  // ✅ Prevents hydration error by rendering only on the client
+  // ✅ Ensure component only runs on the client
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
+  // ✅ Read contract donations
+  const { data: donations, isLoading: donationsLoading } = useReadContract({
+    address: contract.address as `0x${string}`, // ✅ Cast to `0x${string}` to avoid TS error
+    abi: contract.abi,
+    functionName: "getUserDonations",
+    args: [address as `0x${string}`],
+  });
+
+  console.log(donations)
+
+  // ✅ Get wallet balance
+  const { data: balance } = useBalance({
+    address: isClient ? address : undefined,
+  });
+
+  // ✅ Prevent undefined balance errors
+  const eths = balance?.value ? formatEther(balance.value) : "0.00";
+
   const copyAddress = () => {
     if (address) navigator.clipboard.writeText(address.toString());
   };
 
-  if (!isClient) {
-    return <div className="flex h-screen items-center justify-center">Loading...</div>;
-  }
+  if (!isClient) return null; // ✅ Prevent SSR hydration mismatch
 
   if (!isConnected) {
     return (
@@ -77,7 +55,6 @@ export default function WalletPage() {
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
-
       <div className="container pt-24">
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Wallet Info */}
@@ -100,7 +77,7 @@ export default function WalletPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Balance</p>
-                <p className="text-2xl font-bold">{eths ? `${eths} ETH` : "0.00 ETH"}</p>
+                <p className="text-2xl font-bold">{eths} ETH</p>
               </div>
               <Button variant="destructive" className="w-full">
                 <LogOut className="mr-2 h-4 w-4" />
@@ -109,68 +86,24 @@ export default function WalletPage() {
             </div>
           </Card>
 
-          {/* Transactions */}
+          {/* Display Donations */}
           <div className="lg:col-span-2">
-            <Tabs defaultValue="donations">
-              <TabsList>
-                <TabsTrigger value="donations">My Donations</TabsTrigger>
-                <TabsTrigger value="withdrawals">Withdrawals</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="donations" className="mt-4">
-                <div className="space-y-4">
-                  {donations.map((donation) => (
-                    <Card key={donation.id} className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="font-medium">{donation.campaign}</h3>
-                          <p className="text-sm text-muted-foreground">{donation.date}</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-medium">₹{donation.amount}</p>
-                          <a
-                            href={donation.txHash ? `https://etherscan.io/tx/${donation.txHash}` : "#"}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center text-sm text-primary hover:underline"
-                          >
-                            {donation.txHash}
-                            <ArrowUpRight className="ml-1 h-3 w-3" />
-                          </a>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              </TabsContent>
-
-              <TabsContent value="withdrawals" className="mt-4">
-                <div className="space-y-4">
-                  {withdrawals.map((withdrawal) => (
-                    <Card key={withdrawal.id} className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="font-medium">{withdrawal.campaign}</h3>
-                          <p className="text-sm text-muted-foreground">{withdrawal.date}</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-medium">₹{withdrawal.amount.toLocaleString()}</p>
-                          <span
-                            className={`inline-block rounded-full px-2 py-0.5 text-xs ${
-                              withdrawal.status === "completed"
-                                ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
-                                : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300"
-                            }`}
-                          >
-                            {withdrawal.status}
-                          </span>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              </TabsContent>
-            </Tabs>
+            <p className="text-sm text-muted-foreground">All Donations</p>
+            {donationsLoading ? (
+              <p>Loading donations...</p>
+            ) : donations ? (
+              <ul>
+                amount: {donations[0] / 1000000000000000000}
+                <br />
+                Campaign Name: {donations[1]}
+                <br />
+                NGO Address: {donations[2]}
+                <br />
+                <br />
+              </ul>
+            ) : (
+              <p>No donations found.</p>
+            )}
           </div>
         </div>
       </div>

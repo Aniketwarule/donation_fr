@@ -88,7 +88,8 @@ export default function CampaignPage() {
   }
 
   const progress = (parseFloat(campaignData.raised || "0.0") / parseFloat(campaignData.goal || "1")) * 100;
-
+  const img1 = campaignData.imageUrl.split("/")[2];
+  
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
@@ -98,7 +99,7 @@ export default function CampaignPage() {
             <div className="p-4 pl-0 rounded-lg shadow-md">
               <div className="relative aspect-video overflow-hidden rounded-lg">
                 <Image
-                  src={campaignData.imageUrl || "https://via.placeholder.com/800x400"}
+                  src={`http://localhost:5000/uploads/${img1}`}
                   alt={campaignData.title}
                   fill
                   className="object-cover"
