@@ -9,6 +9,8 @@ import { motion } from "framer-motion";
 import { contract } from "@/lib/contract";
 import { writeContract } from "viem/actions";
 import { useWriteContract } from "wagmi";
+import { CheckCircle, Loader2 } from "lucide-react";
+import { useState } from "react";
 
 interface CampaignCardProps {
   campaign: {
@@ -106,7 +108,7 @@ export function CampaignCard2({ campaign }: CampaignCardProps) {
         address: contract.address as `0x${string}`,
         abi: contract.abi,
         functionName: "withdraw",
-        value: BigInt(0.001),
+        value: BigInt(Math.round(0.0001 * 1e18)),
       });
 
       console.log("Withdrawal TX:", tx);
