@@ -92,6 +92,7 @@ export default function CampaignPage() {
               <TabsList>
                 <TabsTrigger value="about">About</TabsTrigger>
                 <TabsTrigger value="milestones">Milestones</TabsTrigger>
+                <TabsTrigger value="milestones">Donors</TabsTrigger>
               </TabsList>
 
               <TabsContent value="about">
@@ -120,6 +121,13 @@ export default function CampaignPage() {
                     )
                   ))}
                 </div>
+              </TabsContent>
+              <TabsContent value="about">
+
+                <p className="text-muted-foreground">
+                  {campaignData.description}
+                </p>
+                
               </TabsContent>
             </Tabs>
           </div>
